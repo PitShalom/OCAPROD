@@ -1,0 +1,2019 @@
+import os
+from PyPDF2 import PdfReader, PdfWriter,PdfFileReader, PdfFileWriter
+from reportlab.pdfgen import canvas
+import io
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from datetime import datetime,timedelta
+import fitz  # PyMuPDF
+
+def registrar_fontes():
+    # Adicione o registro da fonte Arial-Bold
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    # Adicione o registro da fonte Arial
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    # Adicione o registro da fonte IBMPlexSans-Text
+    font_path = os.path.join(os.path.dirname(__file__), r'C:\progOca\fonts')
+    font_name_text = 'IBMPlexSans-Text'
+
+    if font_name_text not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont(font_name_text, os.path.join(font_path, 'IBMPlexSans-Text.ttf')))
+
+    # Adicione o registro da fonte IBMPlexSans-Bold
+    font_name_bold = 'IBMPlexSans-Bold'
+
+    if font_name_bold not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont(font_name_bold, os.path.join(font_path, 'IBMPlexSans-Bold.ttf')))
+
+
+def preencher_nr35(nome, cpf, funcao, dataNR35, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR35_formatada = formatar_data(dataNR35, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 16)
+            can.drawString(329, 300, f'{dataNR35_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR35 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr18(nome, cpf, funcao, dataNR18, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR18_formatada = formatar_data(dataNR18, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR18_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR18 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr01(nome, cpf, funcao, dataNR01, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR01_formatada = formatar_data(dataNR01, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Bold", 32)
+            # Obtenha a largura do texto para centralizá-lo
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            # Calcule a posição X centralizada
+            x_position = (800 - nome_width) / 2
+            # Desenhe o texto centralizado
+            can.drawString(x_position, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(465, 123, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(495, 107, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(329, 300, f'{dataNR01_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Bold", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR01 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr05(nome, cpf, funcao, dataNR05, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR05_formatada = formatar_data(dataNR05, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR05_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR05 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr06(nome, cpf, funcao, dataNR06, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR06_formatada = formatar_data(dataNR06, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR06_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR06 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr10basic(nome, cpf, funcao, dataNR10_basica, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR10basic_formatada = formatar_data(dataNR10_basica, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0: 
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR10basic_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR10 básico para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr10comp(nome, cpf, funcao, dataNR10_complementar, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR10comp_formatada = formatar_data(dataNR10_complementar, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR10comp_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR10 complementar para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr11(nome, cpf, funcao, dataNR11, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR11_formatada = formatar_data(dataNR11, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR11_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR11 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr12(nome, cpf, funcao, dataNR12, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR12_formatada = formatar_data(dataNR12, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR12_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR12 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr17(nome, cpf, funcao, dataNR17, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR17_formatada = formatar_data(dataNR17, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR17_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR17 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr18_pemt(nome, cpf, funcao, dataNR18_pemt, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR18_pemt_formatada = formatar_data(dataNR18_pemt, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR18_pemt_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR18 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr20_infla(nome, cpf, funcao, dataNR20_inflamaveis, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR20_infla_formatada = formatar_data(dataNR20_inflamaveis, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR20_infla_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR20 inflamáveis para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr20_brigada(nome, cpf, funcao, dataNR20_brigada, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR20_brigada_formatada = formatar_data(dataNR20_brigada, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123,f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR20_brigada_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR20 brigada para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr33(nome, cpf, funcao, dataNR33, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR33_formatada = formatar_data(dataNR33, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR33_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR33 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr34(nome, cpf, funcao, dataNR34, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR34_formatada = formatar_data(dataNR34, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR34_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR34 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr34_adm(nome, cpf, funcao, dataNR34_adm, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR34_adm_formatada = formatar_data(dataNR34_adm, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR34_adm_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR34 admissional brigada para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr34_obs_quente(nome, cpf, funcao, dataNR34_obs_quente, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR34_obs_quente_formatada = formatar_data(dataNR34_obs_quente, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Text", 32)
+            can.drawString(150, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Text", 13)
+            can.drawString(241.5, 136.5, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(495, 107, f'{Hab_SupInt}')
+
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(465, 123, f'{nomeTecRep}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Text", 13) 
+            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Text", 18)
+            can.drawString(329, 300, f'{dataNR34_obs_quente_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR34 trabalho a quente para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_fichaEPI(nome, funcao, n_registroTST, modelo_path, output_path, incluir_funcao=True):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Text", 13)
+    can.drawString(110, 758, f'{nome}')
+
+    can.setFont("IBMPlexSans-Text", 13)
+    can.drawString(390, 737, f'{n_registroTST}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Text", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'Ficha de EPI para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_CA(nome,cpf,funcao,Hab_SupInt,n_superInt,cpf_superInt,nomeTecRep,modelo_path, output_path, incluir_funcao=True):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Text", 9)
+    can.drawString(73.3, 721.2, f'{nome}')
+
+    can.setFont("IBMPlexSans-Text", 9)
+    can.drawString(282, 721.2, f'{cpf}')
+
+    can.setFont("IBMPlexSans-Text", 9)
+    can.drawString(313, 769, f'{Hab_SupInt}')#documentação header
+
+    can.setFont("IBMPlexSans-Text", 7)
+    can.drawString(20, 135, f'{Hab_SupInt}')#documentação rodape\assinatura
+
+    can.setFont("IBMPlexSans-Text", 9)
+    can.drawString(518,769, f'{n_superInt}')#documentação header
+
+    can.setFont("IBMPlexSans-Text", 7)
+    can.drawString(75,135, f'{n_superInt}')#documentação rodape\assinatura
+    
+    can.setFont("IBMPlexSans-Text", 9)
+    can.drawString(56, 753, f'{cpf_superInt}')
+
+    can.setFont("IBMPlexSans-Text", 9)
+    can.drawString(150,769, f'{nomeTecRep}')#documentação header
+
+    can.setFont("IBMPlexSans-Text", 7)
+    can.drawString(20,145, f'{nomeTecRep}')#documentação rodape\assinatura
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Text",9)
+        can.drawString(46.5,705.5 , f'{funcao}')
+
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'Carta de Anuencia para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_OS_adm_geral(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == pagina_para_preencher:
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(115, 738, f'{nome}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 10)
+                can.drawString(85, 721, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        elif page_num == 3:  # Página quarta    
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(332, 600, f'{cpf}') 
+#--------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(145, 501.5, f'{cpf_superInt}') 
+
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(151, 519 , f'{nomeTecRep}') 
+            
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text",10)
+                can.drawString(85, 599, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'OS adm geral para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_OS_adm_obra(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == pagina_para_preencher:
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(115, 738, f'{nome}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 10)
+                can.drawString(85, 721, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        elif page_num == 3:  # Página quarta    
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(332, 600, f'{cpf}') 
+            #--------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(145, 501.5, f'{cpf_superInt}') 
+
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(151, 519 , f'{nomeTecRep}') 
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text",10)
+                can.drawString(85, 599, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'OS adm obra para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_OS_aumoxarifado(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == pagina_para_preencher:
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(115, 738, f'{nome}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 10)
+                can.drawString(85, 721, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        elif page_num == 3:  # Página quarta    
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(332, 600, f'{cpf}') 
+            #--------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(145, 501.5, f'{cpf_superInt}') 
+
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(151, 519 , f'{nomeTecRep}') 
+            
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text",10)
+                can.drawString(85, 599, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'OS adm geral para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_OS_obras_civil(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == pagina_para_preencher:
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(115, 738, f'{nome}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 10)
+                can.drawString(85, 721, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        elif page_num == 3:  # Página quarta    
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(332, 600, f'{cpf}') 
+             #--------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(145, 501.5, f'{cpf_superInt}') 
+
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(151, 519 , f'{nomeTecRep}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text",10)
+                can.drawString(85, 599, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'OS Ordem Civil para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_OS_obras_eletricas(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == pagina_para_preencher:
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(115, 738, f'{nome}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 10)
+                can.drawString(85, 721, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        elif page_num == 3:  # Página quarta    
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(332, 600, f'{cpf}') 
+             #--------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(145, 501.5, f'{cpf_superInt}') 
+
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(151, 519 , f'{nomeTecRep}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text",10)
+                can.drawString(85, 599, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'OS Ordem Civil para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_OS_obras_hidraulicas(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+
+    
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == pagina_para_preencher:
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(115, 738, f'{nome}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 10)
+                can.drawString(85, 721, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        elif page_num == 3:  # Página quarta    
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(332, 600, f'{cpf}') 
+             #--------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(145, 501.5, f'{cpf_superInt}') 
+
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(151, 519 , f'{nomeTecRep}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text",10)
+                can.drawString(85, 599, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'OS Ordem Civil para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_OS_soldador(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == pagina_para_preencher:
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(115, 738, f'{nome}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text", 10)
+                can.drawString(85, 721, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        elif page_num == 3:  # Página quarta    
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(332, 600, f'{cpf}') 
+             #--------------------------------------------------
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(145, 501.5, f'{cpf_superInt}') 
+
+            can.setFont("IBMPlexSans-Text", 10)
+            can.drawString(151, 519 , f'{nomeTecRep}')
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Text",10)
+                can.drawString(85, 599, f'{funcao}')
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'OS Ordem Civil para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_cracha(nome,nome_obra,funcao,data_aso,dataNR06,dataNR18,data_nr35,data_nr12,data_nr01,dataNR10_basica,dataNR10_complementar,dataNR11,dataNR18_pemt,dataNR20_inflamaveis,dataNR20_brigada,dataNR33,dataNR34,dataNR34_adm,dataNR34_obs_quente,dataNR17,modelo_path, output_path, incluir_funcao=True):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    data_aso_formatada = formatar_data_cracha(str(data_aso), adicionar_anos=1)
+ 
+    dataNR06_formatada = formatar_data_cracha(str(dataNR06), adicionar_anos=2)
+    dataNR18_formatada = formatar_data_cracha(str(dataNR18), adicionar_anos=2)
+    dataNR35_formatada = formatar_data_cracha(str(data_nr35), adicionar_anos=2)
+    dataNR12_formatada = formatar_data_cracha(str(data_nr12), adicionar_anos=2)
+    dataNR01_formatada = formatar_data_cracha(str(data_nr01), adicionar_anos=2)
+    dataNR10_basica_formatada = formatar_data_cracha(str(dataNR10_basica), adicionar_anos=2)
+    dataNR10_complementar_formatada = formatar_data_cracha(str(dataNR10_complementar), adicionar_anos=2)
+    dataNR11_formatada = formatar_data_cracha(str(dataNR11), adicionar_anos=2)
+    dataNR18_pemt_formatada = formatar_data_cracha(str(dataNR18_pemt), adicionar_anos=2)
+    dataNR20_inflamaveis_formatada = formatar_data_cracha(str(dataNR20_inflamaveis), adicionar_anos=2)
+    dataNR20_brigada_formatada = formatar_data_cracha(str(dataNR20_brigada), adicionar_anos=2)
+    dataNR33_formatada = formatar_data_cracha(str(dataNR33), adicionar_anos=2)
+    dataNR34_formatada = formatar_data_cracha(str(dataNR34), adicionar_anos=2)
+    dataNR34_adm_formatada = formatar_data_cracha(str(dataNR34_adm), adicionar_anos=2)
+    dataNR34_obs_quente_formatada = formatar_data_cracha(str(dataNR34_obs_quente), adicionar_anos=2)
+    dataNR17_formatada = formatar_data_cracha(str(dataNR17), adicionar_anos=2)
+
+
+    can.setFont("IBMPlexSans-Text", 8)
+    can.drawString(67,698, f'{nome}')
+#--------------------------------------------------
+    parte1, parte2 = quebrar_nome_obra(nome_obra)
+    can.setFont("IBMPlexSans-Text", 8)
+    can.drawString(45, 730, f'{parte1}')
+    can.setFont("IBMPlexSans-Text", 8)
+    can.drawString(45, 722, f'{parte2}')
+#--------------------------------------------------
+    can.setFont("IBMPlexSans-Text",8)
+    can.drawString(120, 574, f'{data_aso_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(77, 667, f'{dataNR06_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(78, 634, f'{dataNR12_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(78, 656.5, f'{dataNR18_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(77, 645.5, f'{dataNR35_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(78, 623.5, f'{dataNR01_formatada}')
+    
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(88, 613.5, f'{dataNR10_basica_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(94.5, 602.5, f'{dataNR10_complementar_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(78, 591.5, f'{dataNR11_formatada}')
+#-----------------------------------------------------------------------
+    
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(175, 667, f'{dataNR18_pemt_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(165, 656.5, f'{dataNR20_inflamaveis_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(165, 645.5, f'{dataNR20_brigada_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(165, 634, f'{dataNR33_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(176, 623.5, f'{dataNR34_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(178, 613, f'{dataNR34_adm_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(174.5, 601.5, f'{dataNR34_obs_quente_formatada}')
+
+    can.setFont("IBMPlexSans-Text", 6)
+    can.drawString(167,  591.5, f'{dataNR17_formatada}')
+    
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Text",8)
+        can.drawString(74,688 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'Cracha Planem preenchido para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def quebrar_nome_obra(nome_obra):
+    if '/' in nome_obra:
+        partes = nome_obra.split('/', 1)
+        parte1 = partes[0].strip() + '/'
+        parte2 = partes[1].strip()
+    else:
+        parte1, parte2 = nome_obra.strip(), ''
+
+    return parte1, parte2
+
+def formatar_data_cracha(data, adicionar_anos=0):
+    try:
+        # Verifica se a data não está vazia
+        if not data:
+            return "N/A"
+
+        # Verifica se a data está no formato de intervalo
+        if ' a ' in data:
+            # Divide o intervalo em datas de início e fim
+            data_inicio, data_fim = map(lambda x: x.strip(), data.split(' a '))
+            
+            # Usa apenas a data de fim
+            data_formatada = datetime.strptime(data_fim, "%d/%m/%Y")
+        else:
+            # Trata datas normais
+            data_formatada = datetime.strptime(str(data), "%d/%m/%Y")
+        
+        # Adiciona anos à data formatada
+        data_formatada = data_formatada.replace(year=data_formatada.year + adicionar_anos)
+        
+        return data_formatada.strftime("%d/%m/%Y")
+    except ValueError:
+        try:
+            # Se não for uma data no formato padrão, tenta converter de outra forma (se aplicável)
+            data_formatada = datetime.fromordinal(datetime(1900, 1, 1).toordinal() + int(data) - 2)
+            
+            # Converte para string e, em seguida, para objeto datetime
+            data_formatada = datetime.strptime(str(data_formatada), "%Y-%m-%d %H:%M:%S")
+            
+            # Adiciona anos à data formatada
+            data_formatada = data_formatada.replace(year=data_formatada.year + adicionar_anos)
+            
+            return data_formatada.strftime("%d/%m/%Y")
+        except:
+            return "N/A"
+
+        
+def formatar_data(data, formato='longa'):
+    data_formatada = ""  # Inicializa a variável fora dos blocos condicionais
+
+    if isinstance(data, (str, int, float)):
+        try:
+            # Verifica se a data contém uma barra indicando intervalo
+            if ' a ' in str(data):
+                datas = data.split(' a ')
+                data_inicio = datas[0].strip()
+                data_fim = datas[1].strip()
+                
+                data_inicio_formatada = ""
+                if data_inicio:
+                    if '/' in data_inicio:
+                        data_inicio_formatada = datetime.strptime(data_inicio, "%d/%m/%Y").strftime("%d a %B")
+                    else:
+                        data_inicio_formatada = data_inicio
+
+                data_fim_formatada = ""
+                if data_fim:
+                    if '/' in data_fim:
+                        data_fim_formatada = datetime.strptime(data_fim, "%d/%m/%Y").strftime("%d de %B %Y")
+                    else:
+                        data_fim_formatada = data_fim
+
+                data_formatada = f"{data_inicio_formatada}{' a ' if data_inicio_formatada and data_fim_formatada else ''}{'' if data_inicio_formatada and data_fim_formatada else 'de '}{data_fim_formatada}" if data_inicio_formatada or data_fim_formatada else ''
+            else:
+                # Trata datas normais
+                data_formatada = datetime.strptime(str(data), "%d/%m/%Y").strftime("%d de %B de %Y")
+        except ValueError:
+            try:
+                data_formatada = datetime.fromordinal(datetime(1900, 1, 1).toordinal() + int(data) - 2).strftime(
+                    "%d de %B de %Y")
+            except:
+                data_formatada = str(data)
+    else:
+        if formato == 'curta':
+            data_formatada = data.strftime("%d/%m/%Y")
+        else:
+            data_formatada = data.strftime("%d de %B de %Y")
+
+    # Substituir meses após o tratamento específico
+    meses_ingles = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    meses_portugues = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+
+    for mes_ingles, mes_portugues in zip(meses_ingles, meses_portugues):
+        data_formatada = data_formatada.replace(mes_ingles, mes_portugues)
+
+    # Adicionar ponto final à data
+    data_formatada += '.'
+    
+    return data_formatada
