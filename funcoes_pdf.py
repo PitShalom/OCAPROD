@@ -31,7 +31,7 @@ def registrar_fontes():
         pdfmetrics.registerFont(TTFont(font_name_bold, os.path.join(font_path, 'IBMPlexSans-Bold.ttf')))
 
 
-def preencher_nr35(nome, cpf, funcao, dataNR35, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr35(nome, cpf, funcao, dataNR35, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -52,167 +52,28 @@ def preencher_nr35(nome, cpf, funcao, dataNR35, Hab_SupInt, nomeTecRep, n_superI
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
-
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
-#--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
-
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
-#--------------------------------------------------------------
-            
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
-
-            can.setFont("IBMPlexSans-Text", 16)
-            can.drawString(329, 300, f'{dataNR35_formatada}')
-
-            if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
-                can.drawString(326, 450, f'{funcao}')
-
-            can.save()
-
-            packet.seek(0)
-            new_pdf_data = packet.getvalue()
-
-            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
-            existing_page.merge_page(new_page)
-
-        output.add_page(existing_page)
-
-    base_name, extension = os.path.splitext(os.path.basename(output_path))
-    output_folder = os.path.join(r'C:\pdfBaixados', nome)
-
-    # Criar diretório se não existir
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
-
-    with open(unique_output_path, "wb") as output_file:
-        output.write(output_file)
-
-    print(f'NR35 para {nome} preenchida e salva em {unique_output_path}.')
-    return unique_output_path
-
-def preencher_nr18(nome, cpf, funcao, dataNR18, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
-    registrar_fontes()
-    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
-
-    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
-        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
-
-    dataNR18_formatada = formatar_data(dataNR18, formato='curta')
-
-    with open(modelo_path, "rb") as model_file:
-        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
-
-    output = PdfWriter()
-
-    for page_num in range(len(existing_pdf.pages)):
-        existing_page = existing_pdf.pages[page_num]
-
-        if page_num == 0:  # Somente preencher a primeira página
-            packet = io.BytesIO()
-            can = canvas.Canvas(packet, pagesize=(800, 1200))
-
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
-
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
-#--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{Hab_SupInt}')
-
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{nomeTecRep}')
-#--------------------------------------------------------------
-            
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
-
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR18_formatada}')
-
-            if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
-                can.drawString(326, 450, f'{funcao}')
-
-            can.save()
-
-            packet.seek(0)
-            new_pdf_data = packet.getvalue()
-
-            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
-            existing_page.merge_page(new_page)
-
-        output.add_page(existing_page)
-
-    base_name, extension = os.path.splitext(os.path.basename(output_path))
-    output_folder = os.path.join(r'C:\pdfBaixados', nome)
-
-    # Criar diretório se não existir
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
-
-    with open(unique_output_path, "wb") as output_file:
-        output.write(output_file)
-
-    print(f'NR18 para {nome} preenchida e salva em {unique_output_path}.')
-    return unique_output_path
-
-def preencher_nr01(nome, cpf, funcao, dataNR01, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
-    registrar_fontes()
-    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
-
-    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
-        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
-
-    dataNR01_formatada = formatar_data(dataNR01, formato='curta')
-
-    with open(modelo_path, "rb") as model_file:
-        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
-
-    output = PdfWriter()
-
-    for page_num in range(len(existing_pdf.pages)):
-        existing_page = existing_pdf.pages[page_num]
-
-        if page_num == 0:  # Somente preencher a primeira página
-            packet = io.BytesIO()
-            can = canvas.Canvas(packet, pagesize=(800, 1200))
-
             can.setFont("IBMPlexSans-Bold", 32)
-            # Obtenha a largura do texto para centralizá-lo
             nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
-            # Calcule a posição X centralizada
             x_position = (800 - nome_width) / 2
-            # Desenhe o texto centralizado
             can.drawString(x_position, 380, f'{nome}')
 
             can.setFont("IBMPlexSans-Bold", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
             can.setFont("IBMPlexSans-Bold", 13) 
-            can.drawString(465, 123, f'{Hab_SupInt}')
+            can.drawString(455, 123, f'{nome_TST}')
 
-            can.setFont("IBMPlexSans-Bold", 13) 
-            can.drawString(495, 107, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
             can.setFont("IBMPlexSans-Bold", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
             can.setFont("IBMPlexSans-Bold", 18)
-            can.drawString(329, 300, f'{dataNR01_formatada}')
+            can.drawString(440, 300, f'{dataNR35_formatada}')
 
             if incluir_funcao:
                 can.setFont("IBMPlexSans-Bold", 15)
@@ -235,7 +96,153 @@ def preencher_nr01(nome, cpf, funcao, dataNR01, Hab_SupInt, nomeTecRep, n_superI
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR35 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr18(nome, cpf, funcao, dataNR18, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR18_formatada = formatar_data(dataNR18, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
+
+            nome_TST = "Téc. De Seg. Do Trabalho" 
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR18_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Bold", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'NR18 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_nr01(nome, cpf, funcao, dataNR01, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
+    registrar_fontes()
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    dataNR01_formatada = formatar_data(dataNR01, formato='curta')
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output = PdfWriter()
+
+    for page_num in range(len(existing_pdf.pages)):
+        existing_page = existing_pdf.pages[page_num]
+
+        if page_num == 0:  # Somente preencher a primeira página
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
+
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
+#--------------------------------------------------------------
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
+
+            nome_TST = "Téc. De Seg. Do Trabalho" 
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
+#--------------------------------------------------------------
+            
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
+
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR01_formatada}')
+
+            if incluir_funcao:
+                can.setFont("IBMPlexSans-Bold", 15)
+                can.drawString(326, 450, f'{funcao}')
+
+            can.save()
+
+            packet.seek(0)
+            new_pdf_data = packet.getvalue()
+
+            new_page = PdfReader(io.BytesIO(new_pdf_data)).pages[0]
+            existing_page.merge_page(new_page)
+
+        output.add_page(existing_page)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -243,7 +250,7 @@ def preencher_nr01(nome, cpf, funcao, dataNR01, Hab_SupInt, nomeTecRep, n_superI
     print(f'NR01 para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr05(nome, cpf, funcao, dataNR05, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr05(nome, cpf, funcao, dataNR05, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -264,24 +271,28 @@ def preencher_nr05(nome, cpf, funcao, dataNR05, Hab_SupInt, nomeTecRep, n_superI
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR05_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR05_formatada}')
 
             if incluir_funcao:
                 can.setFont("IBMPlexSans-Text", 15)
@@ -304,7 +315,7 @@ def preencher_nr05(nome, cpf, funcao, dataNR05, Hab_SupInt, nomeTecRep, n_superI
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -312,7 +323,7 @@ def preencher_nr05(nome, cpf, funcao, dataNR05, Hab_SupInt, nomeTecRep, n_superI
     print(f'NR05 para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr06(nome, cpf, funcao, dataNR06, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr06(nome, cpf, funcao, dataNR06, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -333,24 +344,28 @@ def preencher_nr06(nome, cpf, funcao, dataNR06, nomeTecRep, Hab_SupInt, n_superI
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')   # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR06_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR06_formatada}')
 
             if incluir_funcao:
                 can.setFont("IBMPlexSans-Text", 15)
@@ -372,7 +387,7 @@ def preencher_nr06(nome, cpf, funcao, dataNR06, nomeTecRep, Hab_SupInt, n_superI
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -401,24 +416,26 @@ def preencher_nr10basic(nome, cpf, funcao, dataNR10_basica, Hab_SupInt, nomeTecR
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{nomeTecRep}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(488, 107, f'{nomeTecRep}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR10basic_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR10basic_formatada}')
 
             if incluir_funcao:
                 can.setFont("IBMPlexSans-Text", 15)
@@ -440,7 +457,7 @@ def preencher_nr10basic(nome, cpf, funcao, dataNR10_basica, Hab_SupInt, nomeTecR
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -469,24 +486,26 @@ def preencher_nr10comp(nome, cpf, funcao, dataNR10_complementar, Hab_SupInt, nom
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{nomeTecRep}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(488, 107, f'{nomeTecRep}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR10comp_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR10comp_formatada}')
 
             if incluir_funcao:
                 can.setFont("IBMPlexSans-Text", 15)
@@ -509,7 +528,7 @@ def preencher_nr10comp(nome, cpf, funcao, dataNR10_complementar, Hab_SupInt, nom
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -517,7 +536,7 @@ def preencher_nr10comp(nome, cpf, funcao, dataNR10_complementar, Hab_SupInt, nom
     print(f'NR10 complementar para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr11(nome, cpf, funcao, dataNR11, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr11(nome, cpf, funcao, dataNR11, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -538,27 +557,31 @@ def preencher_nr11(nome, cpf, funcao, dataNR11, nomeTecRep, Hab_SupInt, n_superI
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR11_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR11_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -578,7 +601,7 @@ def preencher_nr11(nome, cpf, funcao, dataNR11, nomeTecRep, Hab_SupInt, n_superI
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -586,7 +609,7 @@ def preencher_nr11(nome, cpf, funcao, dataNR11, nomeTecRep, Hab_SupInt, n_superI
     print(f'NR11 para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr12(nome, cpf, funcao, dataNR12, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr12(nome, cpf, funcao, dataNR12, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -607,27 +630,31 @@ def preencher_nr12(nome, cpf, funcao, dataNR12, nomeTecRep, Hab_SupInt, n_superI
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR12_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR12_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -647,7 +674,7 @@ def preencher_nr12(nome, cpf, funcao, dataNR12, nomeTecRep, Hab_SupInt, n_superI
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -655,7 +682,7 @@ def preencher_nr12(nome, cpf, funcao, dataNR12, nomeTecRep, Hab_SupInt, n_superI
     print(f'NR12 para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr17(nome, cpf, funcao, dataNR17, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr17(nome, cpf, funcao, dataNR17, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -676,27 +703,31 @@ def preencher_nr17(nome, cpf, funcao, dataNR17, nomeTecRep, Hab_SupInt, n_superI
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR17_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR17_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -716,7 +747,7 @@ def preencher_nr17(nome, cpf, funcao, dataNR17, nomeTecRep, Hab_SupInt, n_superI
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -724,7 +755,7 @@ def preencher_nr17(nome, cpf, funcao, dataNR17, nomeTecRep, Hab_SupInt, n_superI
     print(f'NR17 para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr18_pemt(nome, cpf, funcao, dataNR18_pemt, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr18_pemt(nome, cpf, funcao, dataNR18_pemt, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -745,27 +776,31 @@ def preencher_nr18_pemt(nome, cpf, funcao, dataNR18_pemt, Hab_SupInt, nomeTecRep
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR18_pemt_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR18_pemt_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -785,22 +820,22 @@ def preencher_nr18_pemt(nome, cpf, funcao, dataNR18_pemt, Hab_SupInt, nomeTecRep
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
 
-    print(f'NR18 para {nome} preenchida e salva em {unique_output_path}.')
+    print(f'NR18 pta para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr20_infla(nome, cpf, funcao, dataNR20_inflamaveis, Hab_SupInt, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr20_infla(nome, cpf, funcao, dataNR20_inflamaveis, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
-    dataNR20_infla_formatada = formatar_data(dataNR20_inflamaveis, formato='curta')
+    dataNR20_inflamaveis_formatada = formatar_data(dataNR20_inflamaveis, formato='curta')
 
     with open(modelo_path, "rb") as model_file:
         existing_pdf = PdfReader(io.BytesIO(model_file.read()))
@@ -814,27 +849,31 @@ def preencher_nr20_infla(nome, cpf, funcao, dataNR20_inflamaveis, Hab_SupInt, no
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR20_infla_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR20_inflamaveis_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -854,15 +893,15 @@ def preencher_nr20_infla(nome, cpf, funcao, dataNR20_inflamaveis, Hab_SupInt, no
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
 
-    print(f'NR20 inflamáveis para {nome} preenchida e salva em {unique_output_path}.')
+    print(f'NR20 inflamaveis pta para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr20_brigada(nome, cpf, funcao, dataNR20_brigada, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr20_brigada(nome, cpf, funcao, dataNR20_brigada, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -883,27 +922,31 @@ def preencher_nr20_brigada(nome, cpf, funcao, dataNR20_brigada, nomeTecRep, Hab_
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123,f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR20_brigada_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR20_brigada_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -923,15 +966,15 @@ def preencher_nr20_brigada(nome, cpf, funcao, dataNR20_brigada, nomeTecRep, Hab_
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
 
-    print(f'NR20 brigada para {nome} preenchida e salva em {unique_output_path}.')
+    print(f'NR20 Brigada para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr33(nome, cpf, funcao, dataNR33, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr33(nome, cpf, funcao, dataNR33, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -952,27 +995,31 @@ def preencher_nr33(nome, cpf, funcao, dataNR33, nomeTecRep, Hab_SupInt, n_superI
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR33_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR33_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -992,7 +1039,7 @@ def preencher_nr33(nome, cpf, funcao, dataNR33, nomeTecRep, Hab_SupInt, n_superI
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
@@ -1000,7 +1047,7 @@ def preencher_nr33(nome, cpf, funcao, dataNR33, nomeTecRep, Hab_SupInt, n_superI
     print(f'NR33 para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr34(nome, cpf, funcao, dataNR34, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr34(nome, cpf, funcao, dataNR34, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -1021,27 +1068,31 @@ def preencher_nr34(nome, cpf, funcao, dataNR34, nomeTecRep, Hab_SupInt, n_superI
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR34_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR34_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -1061,15 +1112,15 @@ def preencher_nr34(nome, cpf, funcao, dataNR34, nomeTecRep, Hab_SupInt, n_superI
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
 
-    print(f'NR34 para {nome} preenchida e salva em {unique_output_path}.')
+    print(f'NR34 Basica para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr34_adm(nome, cpf, funcao, dataNR34_adm, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr34_adm(nome, cpf, funcao, dataNR34_adm, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -1090,28 +1141,33 @@ def preencher_nr34_adm(nome, cpf, funcao, dataNR34_adm, nomeTecRep, Hab_SupInt, 
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR34_adm_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR34_adm_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
+
             can.save()
 
             packet.seek(0)
@@ -1129,15 +1185,15 @@ def preencher_nr34_adm(nome, cpf, funcao, dataNR34_adm, nomeTecRep, Hab_SupInt, 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
 
-    print(f'NR34 admissional brigada para {nome} preenchida e salva em {unique_output_path}.')
+    print(f'NR01 para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_nr34_obs_quente(nome, cpf, funcao, dataNR34_obs_quente, nomeTecRep, Hab_SupInt, n_superInt, modelo_path, output_path, incluir_funcao=True):
+def preencher_nr34_obs_quente(nome, cpf, funcao, dataNR34_obs_quente, Hab_SupInt, nome_TST, n_registroTST, modelo_path, output_path, incluir_funcao=True):
     registrar_fontes()
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
@@ -1158,27 +1214,31 @@ def preencher_nr34_obs_quente(nome, cpf, funcao, dataNR34_obs_quente, nomeTecRep
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-            can.setFont("IBMPlexSans-Text", 32)
-            can.drawString(150, 380, f'{nome}')
+            can.setFont("IBMPlexSans-Bold", 32)
+            nome_width = can.stringWidth(nome, "IBMPlexSans-Bold", 32)
+            x_position = (800 - nome_width) / 2
+            can.drawString(x_position, 380, f'{nome}')
 
-            can.setFont("IBMPlexSans-Text", 13)
-            can.drawString(241.5, 136.5, f'{cpf}')
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(246.5, 138, f'{cpf}')
 #--------------------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(495, 107, f'{Hab_SupInt}')
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(455, 123, f'{Hab_SupInt}')
 
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(465, 123, f'{nomeTecRep}')
+            nome_TST = "Téc. De Seg. Do Trabalho"
+            # Use o valor definido na função drawString
+            can.setFont("IBMPlexSans-Bold", 13)
+            can.drawString(488, 107, f'{nome_TST}')
 #--------------------------------------------------------------
             
-            can.setFont("IBMPlexSans-Text", 13) 
-            can.drawString(488, 93, f'{n_superInt}')  # (pros lados, pra cima-baixo,)
+            can.setFont("IBMPlexSans-Bold", 13) 
+            can.drawString(485, 93, f'{n_registroTST}')  # (pros lados, pra cima-baixo,)
 
-            can.setFont("IBMPlexSans-Text", 18)
-            can.drawString(329, 300, f'{dataNR34_obs_quente_formatada}')
+            can.setFont("IBMPlexSans-Bold", 18)
+            can.drawString(440, 300, f'{dataNR34_obs_quente_formatada}')
 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 15)
+                can.setFont("IBMPlexSans-Bold", 15)
                 can.drawString(326, 450, f'{funcao}')
 
             can.save()
@@ -1198,12 +1258,12 @@ def preencher_nr34_obs_quente(nome, cpf, funcao, dataNR34_obs_quente, nomeTecRep
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     with open(unique_output_path, "wb") as output_file:
         output.write(output_file)
 
-    print(f'NR34 trabalho a quente para {nome} preenchida e salva em {unique_output_path}.')
+    print(f'NR34 OBS QUENTE para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
 def preencher_fichaEPI(nome, funcao, n_registroTST, modelo_path, output_path, incluir_funcao=True):
@@ -1215,14 +1275,14 @@ def preencher_fichaEPI(nome, funcao, n_registroTST, modelo_path, output_path, in
     packet = io.BytesIO()
     can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-    can.setFont("IBMPlexSans-Text", 13)
+    can.setFont("IBMPlexSans-Bold", 13)
     can.drawString(110, 758, f'{nome}')
 
-    can.setFont("IBMPlexSans-Text", 13)
+    can.setFont("IBMPlexSans-Bold", 13)
     can.drawString(390, 737, f'{n_registroTST}')
 
     if incluir_funcao:
-        can.setFont("IBMPlexSans-Text", 13)
+        can.setFont("IBMPlexSans-Bold", 13)
         can.drawString(110,737 , f'{funcao}')
 
 
@@ -1241,7 +1301,7 @@ def preencher_fichaEPI(nome, funcao, n_registroTST, modelo_path, output_path, in
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
     page = existing_pdf.pages[0]
@@ -1254,7 +1314,7 @@ def preencher_fichaEPI(nome, funcao, n_registroTST, modelo_path, output_path, in
     print(f'Ficha de EPI para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_CA(nome,cpf,funcao,Hab_SupInt,n_superInt,cpf_superInt,nomeTecRep,modelo_path, output_path, incluir_funcao=True):
+def preencher_CA(nome, cpf, funcao, Hab_SupInt, n_superInt, cpf_superInt, nomeTecRep, modelo_path, output_path, incluir_funcao=True):
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
@@ -1263,37 +1323,45 @@ def preencher_CA(nome,cpf,funcao,Hab_SupInt,n_superInt,cpf_superInt,nomeTecRep,m
     packet = io.BytesIO()
     can = canvas.Canvas(packet, pagesize=(800, 1200))
 
-    can.setFont("IBMPlexSans-Text", 9)
-    can.drawString(73.3, 721.2, f'{nome}')
+    documento_texto = f'empregado(a)    {nome}    CPF N°:   {cpf}    , empregado (a  desta  empresa , ocupante do cargo'
 
     can.setFont("IBMPlexSans-Text", 9)
-    can.drawString(282, 721.2, f'{cpf}')
+    can.drawString(20, 721.2, documento_texto)
+
+    documento_texto2 = f'Pelo presente documento,eu, {nomeTecRep} ,{Hab_SupInt} registrado no CREA-SP, sob o n°  {n_superInt}'
 
     can.setFont("IBMPlexSans-Text", 9)
-    can.drawString(313, 769, f'{Hab_SupInt}')#documentação header
+    can.drawString(20, 769, documento_texto2)
+
+
+
+    nome_absoluto_Planem = "Planem Engenharia e Eletricidade Ltda"
+    can.setFont("IBMPlexSans-Text", 7)
+    can.drawString(20, 126, f'{nome_absoluto_Planem}')
+
+  # documentação header
 
     can.setFont("IBMPlexSans-Text", 7)
-    can.drawString(20, 135, f'{Hab_SupInt}')#documentação rodape\assinatura
+    # Adiciona o separador " - " apenas para o rodapé na coordenada 135
+    can.drawString(20, 135, f'{Hab_SupInt} - {n_superInt}')  # documentação rodape\assinatura
 
-    can.setFont("IBMPlexSans-Text", 9)
-    can.drawString(518,769, f'{n_superInt}')#documentação header
-
-    can.setFont("IBMPlexSans-Text", 7)
-    can.drawString(75,135, f'{n_superInt}')#documentação rodape\assinatura
-    
     can.setFont("IBMPlexSans-Text", 9)
     can.drawString(56, 753, f'{cpf_superInt}')
 
-    can.setFont("IBMPlexSans-Text", 9)
-    can.drawString(150,769, f'{nomeTecRep}')#documentação header
 
     can.setFont("IBMPlexSans-Text", 7)
-    can.drawString(20,145, f'{nomeTecRep}')#documentação rodape\assinatura
+    can.drawString(20, 145, f'{nomeTecRep}')  # documentação rodape\assinatura
+
+    can.setFont("IBMPlexSans-Text", 7)
+    can.drawString(20, 85, f'{nome}')
 
     if incluir_funcao:
-        can.setFont("IBMPlexSans-Text",9)
-        can.drawString(46.5,705.5 , f'{funcao}')
+        funcao_texto = f'{funcao} está autorizado(a) formalmente pela empresa a realizar a(s) seguinte(s) atividade(s):'
+        can.setFont("IBMPlexSans-Text", 9)
+        can.drawString(20, 705.5, funcao_texto)
 
+        can.setFont("IBMPlexSans-Text", 7)
+        can.drawString(20, 76.5, f'{funcao}')
 
     can.save()
 
@@ -1304,13 +1372,13 @@ def preencher_CA(nome,cpf,funcao,Hab_SupInt,n_superInt,cpf_superInt,nomeTecRep,m
         existing_pdf = PdfReader(io.BytesIO(model_file.read()))
 
     output_folder = os.path.join(r'C:\pdfBaixados', nome)
-    
+
     # Criar diretório se não existir
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
     page = existing_pdf.pages[0]
@@ -1323,7 +1391,7 @@ def preencher_CA(nome,cpf,funcao,Hab_SupInt,n_superInt,cpf_superInt,nomeTecRep,m
     print(f'Carta de Anuencia para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_OS_adm_geral(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+def preencher_OS_adm_geral(nome, cpf, funcao, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
@@ -1337,7 +1405,7 @@ def preencher_OS_adm_geral(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_p
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
 
@@ -1347,10 +1415,10 @@ def preencher_OS_adm_geral(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_p
         if page_num == pagina_para_preencher:
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(115, 738, f'{nome}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 10)
+                can.setFont("IBMPlexSans-Bold", 10)
                 can.drawString(85, 721, f'{funcao}')
             can.save()
 
@@ -1362,19 +1430,19 @@ def preencher_OS_adm_geral(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_p
         elif page_num == 3:  # Página quarta    
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(332, 600, f'{cpf}') 
 #--------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 10)
-            can.drawString(145, 501.5, f'{cpf_superInt}') 
+            can.setFont("IBMPlexSans-Bold", 10)
+            can.drawString(145, 501.5, f'{n_superInt}') 
 
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(151, 519 , f'{nomeTecRep}') 
             
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text",10)
+                can.setFont("IBMPlexSans-Bold",10)
                 can.drawString(85, 599, f'{funcao}')
             can.save()
 
@@ -1391,7 +1459,7 @@ def preencher_OS_adm_geral(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_p
     print(f'OS adm geral para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_OS_adm_obra(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+def preencher_OS_adm_obra(nome, cpf, funcao, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
@@ -1405,7 +1473,7 @@ def preencher_OS_adm_obra(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_pa
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
 
@@ -1415,10 +1483,10 @@ def preencher_OS_adm_obra(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_pa
         if page_num == pagina_para_preencher:
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(115, 738, f'{nome}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 10)
+                can.setFont("IBMPlexSans-Bold", 10)
                 can.drawString(85, 721, f'{funcao}')
             can.save()
 
@@ -1430,18 +1498,18 @@ def preencher_OS_adm_obra(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_pa
         elif page_num == 3:  # Página quarta    
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(332, 600, f'{cpf}') 
             #--------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 10)
-            can.drawString(145, 501.5, f'{cpf_superInt}') 
+            can.setFont("IBMPlexSans-Bold", 10)
+            can.drawString(145, 501.5, f'{n_superInt}') 
 
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(151, 519 , f'{nomeTecRep}') 
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text",10)
+                can.setFont("IBMPlexSans-Bold",10)
                 can.drawString(85, 599, f'{funcao}')
             can.save()
 
@@ -1458,7 +1526,7 @@ def preencher_OS_adm_obra(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_pa
     print(f'OS adm obra para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_OS_aumoxarifado(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+def preencher_OS_aumoxarifado(nome, cpf, funcao, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
@@ -1472,7 +1540,7 @@ def preencher_OS_aumoxarifado(nome, cpf, funcao, nomeTecRep, cpf_superInt, model
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
 
@@ -1482,10 +1550,10 @@ def preencher_OS_aumoxarifado(nome, cpf, funcao, nomeTecRep, cpf_superInt, model
         if page_num == pagina_para_preencher:
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(115, 738, f'{nome}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 10)
+                can.setFont("IBMPlexSans-Bold", 10)
                 can.drawString(85, 721, f'{funcao}')
             can.save()
 
@@ -1497,19 +1565,19 @@ def preencher_OS_aumoxarifado(nome, cpf, funcao, nomeTecRep, cpf_superInt, model
         elif page_num == 3:  # Página quarta    
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(332, 600, f'{cpf}') 
             #--------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 10)
-            can.drawString(145, 501.5, f'{cpf_superInt}') 
+            can.setFont("IBMPlexSans-Bold", 10)
+            can.drawString(145, 501.5, f'{n_superInt}') 
 
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(151, 519 , f'{nomeTecRep}') 
             
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text",10)
+                can.setFont("IBMPlexSans-Bold",10)
                 can.drawString(85, 599, f'{funcao}')
             can.save()
 
@@ -1526,7 +1594,7 @@ def preencher_OS_aumoxarifado(nome, cpf, funcao, nomeTecRep, cpf_superInt, model
     print(f'OS adm geral para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_OS_obras_civil(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+def preencher_OS_obras_civil(nome, cpf, funcao, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
@@ -1540,7 +1608,7 @@ def preencher_OS_obras_civil(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
 
@@ -1550,10 +1618,10 @@ def preencher_OS_obras_civil(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo
         if page_num == pagina_para_preencher:
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(115, 738, f'{nome}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 10)
+                can.setFont("IBMPlexSans-Bold", 10)
                 can.drawString(85, 721, f'{funcao}')
             can.save()
 
@@ -1565,18 +1633,18 @@ def preencher_OS_obras_civil(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo
         elif page_num == 3:  # Página quarta    
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(332, 600, f'{cpf}') 
              #--------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 10)
-            can.drawString(145, 501.5, f'{cpf_superInt}') 
+            can.setFont("IBMPlexSans-Bold", 10)
+            can.drawString(145, 501.5, f'{n_superInt}') 
 
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(151, 519 , f'{nomeTecRep}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text",10)
+                can.setFont("IBMPlexSans-Bold",10)
                 can.drawString(85, 599, f'{funcao}')
             can.save()
 
@@ -1593,7 +1661,7 @@ def preencher_OS_obras_civil(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo
     print(f'OS Ordem Civil para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_OS_obras_eletricas(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+def preencher_OS_obras_eletricas(nome, cpf, funcao, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
@@ -1607,7 +1675,7 @@ def preencher_OS_obras_eletricas(nome, cpf, funcao, nomeTecRep, cpf_superInt, mo
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
 
@@ -1617,10 +1685,10 @@ def preencher_OS_obras_eletricas(nome, cpf, funcao, nomeTecRep, cpf_superInt, mo
         if page_num == pagina_para_preencher:
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(115, 738, f'{nome}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 10)
+                can.setFont("IBMPlexSans-Bold", 10)
                 can.drawString(85, 721, f'{funcao}')
             can.save()
 
@@ -1632,18 +1700,18 @@ def preencher_OS_obras_eletricas(nome, cpf, funcao, nomeTecRep, cpf_superInt, mo
         elif page_num == 3:  # Página quarta    
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(332, 600, f'{cpf}') 
              #--------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 10)
-            can.drawString(145, 501.5, f'{cpf_superInt}') 
+            can.setFont("IBMPlexSans-Bold", 10)
+            can.drawString(145, 501.5, f'{n_superInt}') 
 
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(151, 519 , f'{nomeTecRep}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text",10)
+                can.setFont("IBMPlexSans-Bold",10)
                 can.drawString(85, 599, f'{funcao}')
             can.save()
 
@@ -1660,7 +1728,7 @@ def preencher_OS_obras_eletricas(nome, cpf, funcao, nomeTecRep, cpf_superInt, mo
     print(f'OS Ordem Civil para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_OS_obras_hidraulicas(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+def preencher_OS_obras_hidraulicas(nome, cpf, funcao, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
 
     
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
@@ -1676,7 +1744,7 @@ def preencher_OS_obras_hidraulicas(nome, cpf, funcao, nomeTecRep, cpf_superInt, 
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
 
@@ -1686,10 +1754,10 @@ def preencher_OS_obras_hidraulicas(nome, cpf, funcao, nomeTecRep, cpf_superInt, 
         if page_num == pagina_para_preencher:
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(115, 738, f'{nome}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 10)
+                can.setFont("IBMPlexSans-Bold", 10)
                 can.drawString(85, 721, f'{funcao}')
             can.save()
 
@@ -1701,18 +1769,18 @@ def preencher_OS_obras_hidraulicas(nome, cpf, funcao, nomeTecRep, cpf_superInt, 
         elif page_num == 3:  # Página quarta    
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(332, 600, f'{cpf}') 
              #--------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 10)
-            can.drawString(145, 501.5, f'{cpf_superInt}') 
+            can.setFont("IBMPlexSans-Bold", 10)
+            can.drawString(145, 501.5, f'{n_superInt}') 
 
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(151, 519 , f'{nomeTecRep}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text",10)
+                can.setFont("IBMPlexSans-Bold",10)
                 can.drawString(85, 599, f'{funcao}')
             can.save()
 
@@ -1729,7 +1797,7 @@ def preencher_OS_obras_hidraulicas(nome, cpf, funcao, nomeTecRep, cpf_superInt, 
     print(f'OS Ordem Civil para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_OS_soldador(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
+def preencher_OS_soldador(nome, cpf, funcao, nomeTecRep, n_superInt, modelo_path, output_path, incluir_funcao=True, pagina_para_preencher=0):
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
 
@@ -1743,7 +1811,7 @@ def preencher_OS_soldador(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_pa
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
 
@@ -1753,10 +1821,10 @@ def preencher_OS_soldador(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_pa
         if page_num == pagina_para_preencher:
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(115, 738, f'{nome}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text", 10)
+                can.setFont("IBMPlexSans-Bold", 10)
                 can.drawString(85, 721, f'{funcao}')
             can.save()
 
@@ -1768,18 +1836,18 @@ def preencher_OS_soldador(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_pa
         elif page_num == 3:  # Página quarta    
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=letter)
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(113, 617, f'{nome}')  # Ajuste as coordenadas conforme necessário
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(332, 600, f'{cpf}') 
              #--------------------------------------------------
-            can.setFont("IBMPlexSans-Text", 10)
-            can.drawString(145, 501.5, f'{cpf_superInt}') 
+            can.setFont("IBMPlexSans-Bold", 10)
+            can.drawString(145, 501.5, f'{n_superInt}') 
 
-            can.setFont("IBMPlexSans-Text", 10)
+            can.setFont("IBMPlexSans-Bold", 10)
             can.drawString(151, 519 , f'{nomeTecRep}')
             if incluir_funcao:
-                can.setFont("IBMPlexSans-Text",10)
+                can.setFont("IBMPlexSans-Bold",10)
                 can.drawString(85, 599, f'{funcao}')
             can.save()
 
@@ -1796,7 +1864,7 @@ def preencher_OS_soldador(nome, cpf, funcao, nomeTecRep, cpf_superInt, modelo_pa
     print(f'OS Ordem Civil para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
-def preencher_cracha(nome,nome_obra,funcao,data_aso,dataNR06,dataNR18,data_nr35,data_nr12,data_nr01,dataNR10_basica,dataNR10_complementar,dataNR11,dataNR18_pemt,dataNR20_inflamaveis,dataNR20_brigada,dataNR33,dataNR34,dataNR34_adm,dataNR34_obs_quente,dataNR17,modelo_path, output_path, incluir_funcao=True):
+def preencher_cracha(nome,nome_obra,funcao,data_aso,dataNR06,dataNR05,dataNR18,dataNR35,dataNR12,dataNR01,dataNR10_basica,dataNR10_complementar,dataNR11,dataNR18_pemt,dataNR20_inflamaveis,dataNR20_brigada,dataNR33,dataNR34,dataNR34_adm,dataNR34_obs_quente,dataNR17,modelo_path, output_path, incluir_funcao=True):
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
     if 'Arial' not in pdfmetrics.getRegisteredFontNames():
@@ -1806,89 +1874,89 @@ def preencher_cracha(nome,nome_obra,funcao,data_aso,dataNR06,dataNR18,data_nr35,
     can = canvas.Canvas(packet, pagesize=(800, 1200))
 
     data_aso_formatada = formatar_data_cracha(str(data_aso), adicionar_anos=1)
- 
+    
+    dataNR05_formatada = formatar_data_cracha(str(dataNR05), adicionar_anos=2)
     dataNR06_formatada = formatar_data_cracha(str(dataNR06), adicionar_anos=2)
     dataNR18_formatada = formatar_data_cracha(str(dataNR18), adicionar_anos=2)
-    dataNR35_formatada = formatar_data_cracha(str(data_nr35), adicionar_anos=2)
-    dataNR12_formatada = formatar_data_cracha(str(data_nr12), adicionar_anos=2)
-    dataNR01_formatada = formatar_data_cracha(str(data_nr01), adicionar_anos=2)
+    dataNR35_formatada = formatar_data_cracha(str(dataNR35), adicionar_anos=2)
+    dataNR12_formatada = formatar_data_cracha(str(dataNR12), adicionar_anos=2)
+    dataNR01_formatada = formatar_data_cracha(str(dataNR01), adicionar_anos=2)
     dataNR10_basica_formatada = formatar_data_cracha(str(dataNR10_basica), adicionar_anos=2)
     dataNR10_complementar_formatada = formatar_data_cracha(str(dataNR10_complementar), adicionar_anos=2)
     dataNR11_formatada = formatar_data_cracha(str(dataNR11), adicionar_anos=2)
     dataNR18_pemt_formatada = formatar_data_cracha(str(dataNR18_pemt), adicionar_anos=2)
     dataNR20_inflamaveis_formatada = formatar_data_cracha(str(dataNR20_inflamaveis), adicionar_anos=2)
     dataNR20_brigada_formatada = formatar_data_cracha(str(dataNR20_brigada), adicionar_anos=2)
-    dataNR33_formatada = formatar_data_cracha(str(dataNR33), adicionar_anos=2)
     dataNR34_formatada = formatar_data_cracha(str(dataNR34), adicionar_anos=2)
     dataNR34_adm_formatada = formatar_data_cracha(str(dataNR34_adm), adicionar_anos=2)
     dataNR34_obs_quente_formatada = formatar_data_cracha(str(dataNR34_obs_quente), adicionar_anos=2)
     dataNR17_formatada = formatar_data_cracha(str(dataNR17), adicionar_anos=2)
 
 
-    can.setFont("IBMPlexSans-Text", 8)
+    can.setFont("IBMPlexSans-Bold", 8)
     can.drawString(67,698, f'{nome}')
 #--------------------------------------------------
     parte1, parte2 = quebrar_nome_obra(nome_obra)
-    can.setFont("IBMPlexSans-Text", 8)
+    can.setFont("IBMPlexSans-Bold", 8)
     can.drawString(45, 730, f'{parte1}')
-    can.setFont("IBMPlexSans-Text", 8)
+    can.setFont("IBMPlexSans-Bold", 8)
     can.drawString(45, 722, f'{parte2}')
 #--------------------------------------------------
-    can.setFont("IBMPlexSans-Text",8)
+    can.setFont("IBMPlexSans-Bold",8)
     can.drawString(120, 574, f'{data_aso_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(77, 667, f'{dataNR06_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(77, 667, f'{dataNR01_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(78, 634, f'{dataNR12_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(87, 634, f'{dataNR10_basica_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(78, 656.5, f'{dataNR18_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(78, 656.5, f'{dataNR05_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(77, 645.5, f'{dataNR35_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(78, 645.5, f'{dataNR06_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(78, 623.5, f'{dataNR01_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(88, 623.5, f'{dataNR10_complementar_formatada}')
     
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(88, 613.5, f'{dataNR10_basica_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(78, 612.5, f'{dataNR11_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(94.5, 602.5, f'{dataNR10_complementar_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(78.5, 602.5, f'{dataNR12_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(78, 591.5, f'{dataNR11_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(78, 591.5, f'{dataNR17_formatada}')
 #-----------------------------------------------------------------------
     
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(175, 667, f'{dataNR18_pemt_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(165, 668, f'{dataNR18_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(165, 656.5, f'{dataNR20_inflamaveis_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(175, 657, f'{dataNR18_pemt_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(165, 645.5, f'{dataNR20_brigada_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(165, 645.5, f'{dataNR20_inflamaveis_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(165, 634, f'{dataNR33_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(165, 634, f'{dataNR20_brigada_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
+    can.setFont("IBMPlexSans-Bold", 6)
     can.drawString(176, 623.5, f'{dataNR34_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
+    can.setFont("IBMPlexSans-Bold", 6)
     can.drawString(178, 613, f'{dataNR34_adm_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
+    can.setFont("IBMPlexSans-Bold", 6)
     can.drawString(174.5, 601.5, f'{dataNR34_obs_quente_formatada}')
 
-    can.setFont("IBMPlexSans-Text", 6)
-    can.drawString(167,  591.5, f'{dataNR17_formatada}')
+    can.setFont("IBMPlexSans-Bold", 6)
+    can.drawString(167,  591.5, f'{dataNR35_formatada}')
     
 
     if incluir_funcao:
-        can.setFont("IBMPlexSans-Text",8)
+        can.setFont("IBMPlexSans-Bold",8)
         can.drawString(74,688 , f'{funcao}')
 
     can.save()
@@ -1905,7 +1973,7 @@ def preencher_cracha(nome,nome_obra,funcao,data_aso,dataNR06,dataNR18,data_nr35,
         os.makedirs(output_folder)
 
     base_name, extension = os.path.splitext(os.path.basename(output_path))
-    unique_output_path = os.path.join(output_folder, f'{base_name}_preenchido{extension}')
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
 
     output = PdfWriter()
     page = existing_pdf.pages[0]
@@ -1963,6 +2031,7 @@ def formatar_data_cracha(data, adicionar_anos=0):
             return data_formatada.strftime("%d/%m/%Y")
         except:
             return "N/A"
+
 
         
 def formatar_data(data, formato='longa'):
