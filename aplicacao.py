@@ -7,9 +7,10 @@ from PyPDF2 import PdfFileWriter
 from tqdm import tqdm
 from datetime import datetime
 from ttkthemes import ThemedStyle
-from funcoes_pdf import (preencher_nr01, preencher_nr06, preencher_nr18, preencher_nr35,
-                         preencher_fichaEPI, preencher_CA, preencher_nr05, preencher_nr10basic,
-                         preencher_nr10comp, preencher_nr11, preencher_nr12, preencher_nr17,
+from funcoes_pdf import (preencher_nr01, preencher_nr06, preencher_nr18, preencher_nr35,preencher_nr10comp,
+                         preencher_fichaEPI,preencher_fichaEPI_adm_geral,preencher_fichaEPI_adm_obra,
+                         preencher_CA, preencher_nr05, preencher_nr10basic,
+                         preencher_nr11,preencher_nr12, preencher_nr17,
                          preencher_nr18_pemt, preencher_nr20_infla, preencher_nr20_brigada,
                          preencher_nr33, preencher_nr34, preencher_nr34_adm,
                          preencher_nr34_obs_quente, preencher_cracha, preencher_OS_adm_geral,
@@ -72,7 +73,14 @@ class Aplicacao:
         self.modelo_OS_obra_hidraulica = 'O.S - GHE OBRAS HIDRÁULICA.pdf'
         self.modelo_OS_soldador = 'O.S - GHE OBRAS SOLDA.pdf'
         self.modelo_CA = 'C.A.pdf'
-        self.modelo_fichaEPI = 'fichaEPI.pdf'
+        self.modelo_fichaEPI = 'F.EPI.pdf'
+        self.modelo_epi_adm_geral = 'F.EPI - GHE 1 - ADM GERAL.pdf'
+        self.modelo_epi_adm_obra = 'F.EPI - GHE 2 - ADM DE OBRA.pdf'
+        self.modelo_epi_almoxarife = 'F.EPI - GHE 3 - ALMOXARIFE.pdf'
+        self.modelo_epi_civil = 'F.EPI - GHE 5 - CIVIL.pdf'
+        self.modelo_epi_eletrica = 'F.EPI - GHE 6 - ELÉTRICA.pdf'
+        self.modelo_epi_hidra = 'F.EPI - GHE 7 - HIDRÁULICA.pdf'
+        self.modelo_epi_solda = 'F.EPI - GHE 8 - SOLDA.pdf'
         self.modelo_cracha = 'CRACHA_PLANEM.pdf'
 
         frame = ttk.Frame(root, style="TFrame")
@@ -155,8 +163,8 @@ class Aplicacao:
                 
 
                 # Caminho da pasta do colaborador
-                nome_colaborador = nome.replace(" ", "_")
-                colaborador_folder = os.path.join(self.diretorio_modelos_pdf, 'pdfBaixados222', nome_colaborador)
+                nome_colaborador = '_'.join(nome.split())
+                colaborador_folder = os.path.join(self.diretorio_modelos_pdf, 'pdfBaixados', nome_colaborador)
                 if not os.path.exists(colaborador_folder):
                     os.makedirs(colaborador_folder)
 
@@ -188,6 +196,12 @@ class Aplicacao:
                 output_path_OS_soldador = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_OS_soldador.pdf')
                 output_path_CA = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_C.A.pdf')
                 output_path_fichaEPI = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI.pdf')
+                output_path_epi_adm_geral = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Adm_Geral.pdf')
+                output_path_epi_adm_obra = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Adm_Obra.pdf')
+                output_path_epi_almoxarife = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Almoxarife.pdf')
+                output_path_epi_civil = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Civil.pdf')
+                output_path_epi_hidra = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Hidraulica.pdf')
+                output_path_epi_solda = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_solda.pdf')
                 output_path_cracha = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Cracha.pdf')
 
 
@@ -217,8 +231,11 @@ class Aplicacao:
                 preencher_OS_obras_hidraulicas(nome, cpf, funcao, nome_TST, n_registroTST, os.path.join(self.diretorio_modelos_pdf, self.modelo_OS_obra_hidraulica), output_path_OS_obra_hidraulica, incluir_funcao=True)
                 preencher_OS_soldador(nome, cpf, funcao, nome_TST, n_registroTST, os.path.join(self.diretorio_modelos_pdf, self.modelo_OS_soldador), output_path_OS_soldador, incluir_funcao=True)
                #------
-                preencher_CA(nome, cpf, funcao, Hab_SupInt, n_superInt, cpf_superInt, nomeTecRep, os.path.join(self.diretorio_modelos_pdf, self.modelo_CA), output_path_CA, incluir_funcao=True)
                 preencher_fichaEPI(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_fichaEPI), output_path_fichaEPI, incluir_funcao=True)
+                preencher_fichaEPI_adm_geral(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_epi_adm_geral),output_path_epi_adm_geral, incluir_funcao=True)
+                preencher_fichaEPI_adm_obra(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_epi_adm_obra), output_path_epi_adm_obra, incluir_funcao=True)
+               #-------
+                preencher_CA(nome, cpf, funcao, Hab_SupInt, n_superInt, cpf_superInt, nomeTecRep, os.path.join(self.diretorio_modelos_pdf, self.modelo_CA), output_path_CA, incluir_funcao=True)
                 preencher_cracha(nome,nome_obra,funcao,data_aso,dataNR06,dataNR05,dataNR18,dataNR35,dataNR12,dataNR01,dataNR10_basica,dataNR10_complementar,dataNR11,dataNR18_pemt,dataNR20_inflamaveis,dataNR20_brigada,dataNR33,dataNR34,dataNR34_adm,dataNR34_obs_quente,dataNR17, os.path.join(self.diretorio_modelos_pdf, self.modelo_cracha), output_path_cracha, incluir_funcao=True)
                 progress_value = (index + 1) / total_rows * 100
                 self.progress_bar["value"] = progress_value

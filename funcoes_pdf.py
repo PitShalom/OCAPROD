@@ -1314,6 +1314,108 @@ def preencher_fichaEPI(nome, funcao, n_registroTST, modelo_path, output_path, in
     print(f'Ficha de EPI para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
+def preencher_fichaEPI_adm_geral(nome, funcao, n_registroTST, modelo_path, output_path, incluir_funcao=True):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 13)
+    can.drawString(94, 729, f'{nome}')
+
+    can.setFont("IBMPlexSans-Bold", 13)
+    can.drawString(355, 710, f'{n_registroTST}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(94,710 , f'{funcao}')
+
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'Ficha de EPI para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+
+def preencher_fichaEPI_adm_obra(nome, funcao, n_registroTST, modelo_path, output_path, incluir_funcao=True):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 13)
+    can.drawString(94, 729, f'{nome}')
+
+    can.setFont("IBMPlexSans-Bold", 13)
+    can.drawString(355, 710, f'{n_registroTST}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(94,710 , f'{funcao}')
+
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'Ficha de EPI para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+
+
+
+
+
 def preencher_CA(nome, cpf, funcao, Hab_SupInt, n_superInt, cpf_superInt, nomeTecRep, modelo_path, output_path, incluir_funcao=True):
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
