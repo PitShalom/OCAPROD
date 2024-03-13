@@ -8,14 +8,17 @@ from tqdm import tqdm
 from datetime import datetime
 from ttkthemes import ThemedStyle
 from funcoes_pdf import (preencher_nr01, preencher_nr06, preencher_nr18, preencher_nr35,preencher_nr10comp,
-                         preencher_fichaEPI,preencher_fichaEPI_adm_geral,preencher_fichaEPI_adm_obra,
+                         preencher_fichaEPI,preencher_fichaEPI_adm_geral,preencher_fichaEPI_adm_obra,preencher_fichaEPI_almoxarife,preencher_fichaEPI_civil,preencher_fichaEPI_hidra,preencher_fichaEPI_solda,
                          preencher_CA, preencher_nr05, preencher_nr10basic,
                          preencher_nr11,preencher_nr12, preencher_nr17,
                          preencher_nr18_pemt, preencher_nr20_infla, preencher_nr20_brigada,
                          preencher_nr33, preencher_nr34, preencher_nr34_adm,
                          preencher_nr34_obs_quente, preencher_cracha, preencher_OS_adm_geral,
                          preencher_OS_aumoxarifado, preencher_OS_obras_civil, preencher_OS_adm_obra,
-                         preencher_OS_obras_eletricas, preencher_OS_obras_hidraulicas, preencher_OS_soldador)
+                         preencher_OS_obras_eletricas, preencher_OS_obras_hidraulicas, preencher_OS_soldador,
+                         preencher_prova_NR06,preencher_prova_NR10,preencher_prova_NR11,preencher_prova_NR12,preencher_prova_NR17,
+                         preencher_prova_NR18,preencher_prova_NR18pta,preencher_prova_NR20_infla,preencher_prova_NR33,preencher_prova_NR34,preencher_prova_NR35,
+                         preencher_treino_NR01)
 
 class Aplicacao:
     def __init__(self, root):
@@ -81,6 +84,34 @@ class Aplicacao:
         self.modelo_epi_eletrica = 'F.EPI - GHE 6 - ELÉTRICA.pdf'
         self.modelo_epi_hidra = 'F.EPI - GHE 7 - HIDRÁULICA.pdf'
         self.modelo_epi_solda = 'F.EPI - GHE 8 - SOLDA.pdf'
+        self.modelo_provaNR06 = 'NR06_PROVA.pdf'
+        self.modelo_provaNR10 = 'NR10 - PROVA.pdf'
+        self.modelo_provaNR11 = 'NR11 - PROVA.pdf'
+        self.modelo_provaNR12 = 'NR12 - PROVA.pdf'
+        self.modelo_provaNR17 = 'NR17 - PROVA.pdf'
+        self.modelo_provaNR18 = 'NR18 - PROVA.pdf'
+        self.modelo_provaNR18_PTA = 'NR18 - PTA - PROVA.pdf'
+        self.modelo_provaNR20 = 'NR20 - PROVA.pdf'
+        self.modelo_provaNR33 = 'NR33 - PROVA.pdf'
+        self.modelo_provaNR34 = 'NR34 - PROVA.pdf'
+        self.modelo_provaNR35 = 'NR35 - PROVA.pdf'
+        self.modelo_treinoNR01 = 'RELATÓRIO DE TREINAMENTO - NR01.pdf'
+        self.modelo_treinoNR06 = 'RELATÓRIO DE TREINAMENTO - NR06.pdf'
+        self.modelo_treinoNR10 = 'RELATÓRIO DE TREINAMENTO - NR10.pdf'
+        self.modelo_treinoNR10c = 'RELATÓRIO DE TREINAMENTO - NR10C.pdf'
+        self.modelo_treinoNR11 = 'RELATÓRIO DE TREINAMENTO - NR11.pdf'
+        self.modelo_treinoNR12 = 'RELATÓRIO DE TREINAMENTO - NR12.pdf'
+        self.modelo_treinoNR17 = 'RELATÓRIO DE TREINAMENTO - NR17.pdf'
+        self.modelo_treinoNR18civil = 'RELATÓRIO DE TREINAMENTO - NR18 CIVIL.pdf'
+        self.modelo_treinoNR18pemt = 'RELATÓRIO DE TREINAMENTO - NR18 PEMT.pdf'
+        self.modelo_treinoNR20 = 'RELATÓRIO DE TREINAMENTO - NR20.pdf'
+        self.modelo_treinoNR33 = 'RELATÓRIO DE TREINAMENTO - NR33.pdf'
+        self.modelo_treinoNR34adm = 'RELATÓRIO DE TREINAMENTO - NR34 - 1.admissional.pdf'
+        self.modelo_treinoNR34obs = 'RELATÓRIO DE TREINAMENTO - NR34 - 2.observador.pdf'
+        self.modelo_treinoNR34bas = 'RELATÓRIO DE TREINAMENTO - NR34 - 2.observador.pdf'
+        self.modelo_treinoNR35 = 'RELATÓRIO DE TREINAMENTO - NR35.pdf'
+        
+
         self.modelo_cracha = 'CRACHA_PLANEM.pdf'
 
         frame = ttk.Frame(root, style="TFrame")
@@ -194,7 +225,9 @@ class Aplicacao:
                 output_path_OS_obra_eletrica = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_OS_obras_eletricas.pdf')
                 output_path_OS_obra_hidraulica = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_OS_obras_hidraulica.pdf')
                 output_path_OS_soldador = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_OS_soldador.pdf')
+              #-------------
                 output_path_CA = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_C.A.pdf')
+              #-----------
                 output_path_fichaEPI = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI.pdf')
                 output_path_epi_adm_geral = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Adm_Geral.pdf')
                 output_path_epi_adm_obra = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Adm_Obra.pdf')
@@ -202,6 +235,19 @@ class Aplicacao:
                 output_path_epi_civil = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Civil.pdf')
                 output_path_epi_hidra = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_Hidraulica.pdf')
                 output_path_epi_solda = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_fichaEPI_solda.pdf')
+                output_path_prova_NR06 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR06.pdf')
+                output_path_prova_NR10 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR10.pdf')
+                output_path_prova_NR11 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR11.pdf')
+                output_path_prova_NR12 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR12.pdf')
+                output_path_prova_NR17 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR17.pdf')
+                output_path_prova_NR18 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR18.pdf')
+                output_path_prova_NR18pta = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR18pta.pdf')
+                output_path_prova_NR20infla = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR20_Inflamaveis.pdf')
+                output_path_prova_NR33 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR33.pdf')
+                output_path_prova_NR34 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR34.pdf')
+                output_path_prova_NR35 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR35.pdf')
+                output_path_treino_NR01 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR01.pdf')
+              #---------
                 output_path_cracha = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Cracha.pdf')
 
 
@@ -231,9 +277,32 @@ class Aplicacao:
                 preencher_OS_obras_hidraulicas(nome, cpf, funcao, nome_TST, n_registroTST, os.path.join(self.diretorio_modelos_pdf, self.modelo_OS_obra_hidraulica), output_path_OS_obra_hidraulica, incluir_funcao=True)
                 preencher_OS_soldador(nome, cpf, funcao, nome_TST, n_registroTST, os.path.join(self.diretorio_modelos_pdf, self.modelo_OS_soldador), output_path_OS_soldador, incluir_funcao=True)
                #------
+                
                 preencher_fichaEPI(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_fichaEPI), output_path_fichaEPI, incluir_funcao=True)
                 preencher_fichaEPI_adm_geral(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_epi_adm_geral),output_path_epi_adm_geral, incluir_funcao=True)
                 preencher_fichaEPI_adm_obra(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_epi_adm_obra), output_path_epi_adm_obra, incluir_funcao=True)
+                preencher_fichaEPI_almoxarife(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_epi_almoxarife), output_path_epi_almoxarife, incluir_funcao=True)
+                preencher_fichaEPI_civil(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_epi_civil), output_path_epi_civil, incluir_funcao=True)
+                preencher_fichaEPI_hidra(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_epi_hidra), output_path_epi_hidra, incluir_funcao=True)
+                preencher_fichaEPI_solda(nome,funcao, registro_empregado_epi, os.path.join(self.diretorio_modelos_pdf, self.modelo_epi_solda), output_path_epi_solda, incluir_funcao=True)
+
+               #-------
+                
+                preencher_prova_NR06(nome, funcao,dataNR06, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR06), output_path_prova_NR06, incluir_funcao=False)
+                preencher_prova_NR10(nome, funcao,dataNR10_basica, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR10), output_path_prova_NR10, incluir_funcao=False)
+                preencher_prova_NR11(nome, funcao,dataNR11, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR11), output_path_prova_NR11, incluir_funcao=False)
+                preencher_prova_NR12(nome, funcao,dataNR12, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR12), output_path_prova_NR12, incluir_funcao=False)
+                preencher_prova_NR17(nome, funcao,dataNR17, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR17), output_path_prova_NR17, incluir_funcao=False)
+                preencher_prova_NR18(nome, funcao,dataNR18, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR18), output_path_prova_NR18, incluir_funcao=False)
+                preencher_prova_NR18pta(nome, funcao,dataNR18_pemt, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR18_PTA), output_path_prova_NR18pta, incluir_funcao=False)
+                preencher_prova_NR20_infla(nome, funcao,dataNR20_inflamaveis, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR20), output_path_prova_NR20infla, incluir_funcao=False)
+                preencher_prova_NR33(nome, funcao,dataNR33, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR33), output_path_prova_NR33, incluir_funcao=False)
+                preencher_prova_NR34(nome, funcao,dataNR34, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR34), output_path_prova_NR34, incluir_funcao=False)
+                preencher_prova_NR35(nome, funcao,dataNR35, os.path.join(self.diretorio_modelos_pdf, self.modelo_provaNR35), output_path_prova_NR35, incluir_funcao=False)
+
+               #-------
+                preencher_treino_NR01(nome,nome_TST, funcao,dataNR01, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR01), output_path_treino_NR01, incluir_funcao=False)
+
                #-------
                 preencher_CA(nome, cpf, funcao, Hab_SupInt, n_superInt, cpf_superInt, nomeTecRep, os.path.join(self.diretorio_modelos_pdf, self.modelo_CA), output_path_CA, incluir_funcao=True)
                 preencher_cracha(nome,nome_obra,funcao,data_aso,dataNR06,dataNR05,dataNR18,dataNR35,dataNR12,dataNR01,dataNR10_basica,dataNR10_complementar,dataNR11,dataNR18_pemt,dataNR20_inflamaveis,dataNR20_brigada,dataNR33,dataNR34,dataNR34_adm,dataNR34_obs_quente,dataNR17, os.path.join(self.diretorio_modelos_pdf, self.modelo_cracha), output_path_cracha, incluir_funcao=True)
@@ -247,6 +316,7 @@ class Aplicacao:
                     return
                 else:
                     messagebox.showerror("Erro", f"FECHE O PDF ABERTO: {str(e)}")
+                    print({str(e)})
                     return
         self.progress_bar["value"] = 100
         self.progress_label.config(text="Concluído, preenchimento e salvamento concluídos com sucesso!")
