@@ -18,7 +18,8 @@ from funcoes_pdf import (preencher_nr01, preencher_nr06, preencher_nr18, preench
                          preencher_OS_obras_eletricas, preencher_OS_obras_hidraulicas, preencher_OS_soldador,
                          preencher_prova_NR06,preencher_prova_NR10,preencher_prova_NR11,preencher_prova_NR12,preencher_prova_NR17,
                          preencher_prova_NR18,preencher_prova_NR18pta,preencher_prova_NR20_infla,preencher_prova_NR33,preencher_prova_NR34,preencher_prova_NR35,
-                         preencher_treino_NR01)
+                         preencher_treino_NR01,preencher_treino_NR06,preencher_treino_NR10,preencher_treino_NR10c,preencher_treino_NR11,preencher_treino_NR12,preencher_treino_NR17,
+                         preencher_treino_NR18civil,preencher_treino_NR18pta,preencher_treino_NR20,preencher_treino_NR33,preencher_treino_NR34adm,preencher_treino_NR34obs,preencher_treino_NR34bas,preencher_treino_NR35)
 
 class Aplicacao:
     def __init__(self, root):
@@ -108,7 +109,7 @@ class Aplicacao:
         self.modelo_treinoNR33 = 'RELATÓRIO DE TREINAMENTO - NR33.pdf'
         self.modelo_treinoNR34adm = 'RELATÓRIO DE TREINAMENTO - NR34 - 1.admissional.pdf'
         self.modelo_treinoNR34obs = 'RELATÓRIO DE TREINAMENTO - NR34 - 2.observador.pdf'
-        self.modelo_treinoNR34bas = 'RELATÓRIO DE TREINAMENTO - NR34 - 2.observador.pdf'
+        self.modelo_treinoNR34bas = 'RELATÓRIO DE TREINAMENTO - NR34 - 3.básico.pdf'
         self.modelo_treinoNR35 = 'RELATÓRIO DE TREINAMENTO - NR35.pdf'
         
 
@@ -246,7 +247,23 @@ class Aplicacao:
                 output_path_prova_NR33 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR33.pdf')
                 output_path_prova_NR34 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR34.pdf')
                 output_path_prova_NR35 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Prova_NR35.pdf')
+               #---------
                 output_path_treino_NR01 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR01.pdf')
+                output_path_treino_NR06 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR06.pdf')
+                output_path_treino_NR10 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR10 Basica.pdf')
+                output_path_treino_NR10C = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR10 Complementar.pdf')
+                output_path_treino_NR11 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR11.pdf')
+                output_path_treino_NR12 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR12.pdf')
+                output_path_treino_NR17 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR17.pdf')
+                output_path_treino_NR18Civil = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR18 CIVIL.pdf')
+                output_path_treino_NR18pta = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR18 PEMT.pdf')
+                output_path_treino_NR20 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR20 INFLAMAVEL.pdf')
+                output_path_treino_NR33 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR33.pdf')
+                output_path_treino_NR34ADM = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR34 - 1.admissional.pdf')
+                output_path_treino_NR34OBS = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR34 - 2.observador.pdf')
+                output_path_treino_NR34BAS = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR34 - 3.básico.pdf')
+                output_path_treino_NR35 = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_RELATÓRIO DE TREINAMENTO - NR35.pdf')
+                
               #---------
                 output_path_cracha = os.path.join(colaborador_folder, f'{nome_colaborador}_{data_atual}_Cracha.pdf')
 
@@ -302,6 +319,21 @@ class Aplicacao:
 
                #-------
                 preencher_treino_NR01(nome,nome_TST, funcao,dataNR01, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR01), output_path_treino_NR01, incluir_funcao=False)
+                preencher_treino_NR06(nome,nome_TST, funcao,dataNR06, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR06), output_path_treino_NR06, incluir_funcao=False)
+                preencher_treino_NR10(nome,nome_TST, funcao,dataNR10_basica, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR10), output_path_treino_NR10, incluir_funcao=False)
+                preencher_treino_NR10c(nome,nome_TST, funcao,dataNR10_complementar, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR10c), output_path_treino_NR10C, incluir_funcao=False)
+                preencher_treino_NR11(nome,nome_TST, funcao,dataNR11, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR11), output_path_treino_NR11, incluir_funcao=False)
+                preencher_treino_NR12(nome,nome_TST, funcao,dataNR12, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR12), output_path_treino_NR12, incluir_funcao=False)
+                preencher_treino_NR17(nome,nome_TST, funcao,dataNR17, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR17), output_path_treino_NR17, incluir_funcao=False)
+                preencher_treino_NR18civil(nome,nome_TST, funcao,dataNR18, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR18civil), output_path_treino_NR18Civil, incluir_funcao=False)
+                preencher_treino_NR18pta(nome,nome_TST, funcao,dataNR18_pemt, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR18pemt), output_path_treino_NR18pta, incluir_funcao=False)
+                preencher_treino_NR20(nome,nome_TST, funcao,dataNR20_inflamaveis, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR20), output_path_treino_NR20, incluir_funcao=False)
+                preencher_treino_NR33(nome,nome_TST, funcao,dataNR33, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR33), output_path_treino_NR33, incluir_funcao=False)
+                preencher_treino_NR34adm(nome,nome_TST, funcao,dataNR34_adm, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR34adm), output_path_treino_NR34ADM, incluir_funcao=False)
+                preencher_treino_NR34obs(nome,nome_TST, funcao,dataNR34_obs_quente, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR34obs), output_path_treino_NR34OBS, incluir_funcao=False)
+                preencher_treino_NR34bas(nome,nome_TST, funcao,dataNR34, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR34bas), output_path_treino_NR34BAS, incluir_funcao=False)
+                preencher_treino_NR35(nome,nome_TST, funcao,dataNR35, os.path.join(self.diretorio_modelos_pdf, self.modelo_treinoNR35), output_path_treino_NR35, incluir_funcao=False)
+                
 
                #-------
                 preencher_CA(nome, cpf, funcao, Hab_SupInt, n_superInt, cpf_superInt, nomeTecRep, os.path.join(self.diretorio_modelos_pdf, self.modelo_CA), output_path_CA, incluir_funcao=True)

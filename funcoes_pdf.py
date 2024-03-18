@@ -2829,6 +2829,668 @@ def preencher_treino_NR01(nome,nomeTST, funcao, dataNR01, modelo_path, output_pa
     print(f'RELATÓRIO DE TREINAMENTO - NR01 para {nome} preenchida e salva em {unique_output_path}.')
     return unique_output_path
 
+def preencher_treino_NR06(nome,nomeTST, funcao, dataNR06, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(132, 643, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 613 , f'{dataNR06}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR06 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR10(nome,nomeTST, funcao, dataNR10, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(132, 500, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 470 , f'{dataNR10}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR10 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR10c(nome,nomeTST, funcao, dataNR10_complementar, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(132, 488.5, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158,462 , f'{dataNR10_complementar}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR10 Complementar para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR11(nome,nomeTST, funcao, dataNR11, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(132, 605, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 575 , f'{dataNR11}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR11 Complementar para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR12(nome,nomeTST, funcao, dataNR12, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(132, 535, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 508 , f'{dataNR12}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR12 Complementar para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR17(nome,nomeTST, funcao, dataNR17, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(129, 662, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 632 , f'{dataNR17}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR17 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR18civil(nome,nomeTST, funcao, dataNR18, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(129, 662, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 632 , f'{dataNR18}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR18 basica para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR18pta(nome,nomeTST, funcao, dataNR18_pemt, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(130, 593, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 565 , f'{dataNR18_pemt}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR18 pta para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR20(nome,nomeTST, funcao, dataNR20, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(129, 650, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 621 , f'{dataNR20}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR20 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR33(nome,nomeTST, funcao, dataNR33, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(129, 628, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 597 , f'{dataNR33}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR33 para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR34adm(nome,nomeTST, funcao, dataNR34_adm, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(129, 650, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 620 , f'{dataNR34_adm}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR34 ADM para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR34obs(nome,nomeTST, funcao, dataNR34_obs_quente, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(129, 661, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 632 , f'{dataNR34_obs_quente}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR34 OBS  para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR34bas(nome,nomeTST, funcao, dataNR34, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(129, 440, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 411 , f'{dataNR34}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR34 basica  para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+def preencher_treino_NR35(nome,nomeTST, funcao, dataNR35, modelo_path, output_path, incluir_funcao=False):
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+
+    if 'Arial' not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+
+    packet = io.BytesIO()
+    can = canvas.Canvas(packet, pagesize=(800, 1200))
+
+    can.setFont("IBMPlexSans-Bold", 10)
+    can.drawString(129, 615, f'{nomeTST}')
+
+    can.setFont("IBMPlexSans-Bold", 9)
+    can.drawString(158, 586.5 , f'{dataNR35}')
+
+    if incluir_funcao:
+        can.setFont("IBMPlexSans-Bold", 13)
+        can.drawString(110,737 , f'{funcao}')
+
+    can.save()
+
+    packet.seek(0)
+    new_pdf_data = packet.getvalue()
+
+    with open(modelo_path, "rb") as model_file:
+        existing_pdf = PdfReader(io.BytesIO(model_file.read()))
+
+    output_folder = os.path.join(r'C:\pdfBaixados', nome)
+    
+    # Criar diretório se não existir
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    base_name, extension = os.path.splitext(os.path.basename(output_path))
+    unique_output_path = os.path.join(output_folder, f'{base_name}{extension}')
+
+    output = PdfWriter()
+    page = existing_pdf.pages[0]
+    page.merge_page(PdfReader(io.BytesIO(new_pdf_data)).pages[0])
+    output.add_page(page)
+
+    with open(unique_output_path, "wb") as output_file:
+        output.write(output_file)
+
+    print(f'RELATÓRIO DE TREINAMENTO - NR18 pta para {nome} preenchida e salva em {unique_output_path}.')
+    return unique_output_path
+
+
+
 def preencher_cracha(nome,nome_obra,funcao,data_aso,dataNR06,dataNR05,dataNR18,dataNR35,dataNR12,dataNR01,dataNR10_basica,dataNR10_complementar,dataNR11,dataNR18_pemt,dataNR20_inflamaveis,dataNR20_brigada,dataNR33,dataNR34,dataNR34_adm,dataNR34_obs_quente,dataNR17,modelo_path, output_path, incluir_funcao=True):
     pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
 
